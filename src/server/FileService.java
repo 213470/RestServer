@@ -29,19 +29,12 @@ public class FileService {
 	private Queue<FileEvent> queue = Collections.asLifoQueue(new LinkedList<FileEvent>());
 	private TrafficController tc = new TrafficController(queue);
 
-	@GET
-	@Path("/get")
-	@Produces("application/json")
-	public Response getQueue() {
-		return Response.status(200).entity(queue.poll()).build();
-	}
-
 	@POST
 	@Path("/post")
 	@Consumes("application/json")
 	public Response createProductInJSON(String jsonUpdate) {
-		service.submit(tc);
-		service.shutdown();
+//		service.submit(tc);
+//		service.shutdown();
 
 		String result = "JSON from client" + jsonUpdate;
 		ObjectMapper mapper = new ObjectMapper();

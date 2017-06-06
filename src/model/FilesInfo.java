@@ -1,15 +1,19 @@
 package model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class FilesInfo {
 
 	private String username;
 	private int fileNo;
 	private List<File> fileList;
-	
+
 	public FilesInfo() {
 		this.username = "";
 		this.fileNo = 0;
@@ -66,6 +70,22 @@ public class FilesInfo {
 	@Override
 	public boolean equals(Object obj) {
 		return this.username.equals(((FilesInfo) obj).getUsername()) && this.fileNo == ((FilesInfo) obj).getFileNo();
+	}
+
+	public FilesInfo getDiff(FilesInfo fi) {
+		List<File> retainedFiles = new LinkedList<>();
+		List<File> differenceList = new LinkedList<>();
+		retainedFiles.addAll(fileList);
+		differenceList.addAll(fileList);
+
+		retainedFiles.retainAll(fi.getFileList());
+		differenceList.removeAll(retainedFiles);
+
+		// if (!fileList.isEmpty() && !differenceList.isEmpty()) {
+		// return true;
+		// }
+		// return false;
+		return new FilesInfo(fi.getUsername(), differenceList.size(), differenceList);
 	}
 
 }
