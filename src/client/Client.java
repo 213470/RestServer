@@ -25,8 +25,6 @@ public class Client {
 
 			UserInfo user = new UserInfo(username, args[0]);
 
-			// ClientConnector connector = new ClientConnector(username);
-
 			Crawler crawler = new Crawler(user.getHomePath() + File.separator + user.getUsername());
 			crawler.scanFiles();
 			if (crawler.checkForDifference()) {
@@ -36,10 +34,9 @@ public class Client {
 
 				ClientRequest request = new ClientRequest("http://localhost:8080/RestServer/file/post");
 				request.accept("application/json");
-
-				System.out.println(crawler.returnJson(username));
 				request.body("application/json", crawler.returnJson(username));
-
+//				System.out.println(crawler.returnJson(username));
+				
 				ClientResponse<String> response = request.post(String.class);
 
 				if (response.getStatus() != 201) {

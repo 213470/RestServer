@@ -29,12 +29,15 @@ public class FileService {
 	private Queue<FileEvent> queue = Collections.asLifoQueue(new LinkedList<FileEvent>());
 	private TrafficController tc = new TrafficController(queue);
 
+	public FileService() {
+		service.submit(tc);
+		service.shutdown();
+	}
+
 	@POST
 	@Path("/post")
 	@Consumes("application/json")
 	public Response createProductInJSON(String jsonUpdate) {
-//		service.submit(tc);
-//		service.shutdown();
 
 		String result = "JSON from client" + jsonUpdate;
 		ObjectMapper mapper = new ObjectMapper();
@@ -53,7 +56,8 @@ public class FileService {
 	private void enqueue(FilesInfo fi) {
 		for (File f : fi.getFileList()) {
 			FileEvent fe = new FileEvent();
-			fe.setDestinationDirectory("/home/madmatts/Dropbox/Server" + File.separator);
+			fe.setDestinationDirectory(
+					"/home/madmatts/Dropbox/Server" + File.separator + fi.getUsername() + File.separator);
 			fe.setFilename(f.getName());
 			fe.setSourceDirectory(f.getPath());
 			queue.add(fe);
