@@ -13,6 +13,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -20,10 +21,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.FileEvent;
 import model.FilesInfo;
+import utility.Crawler;
 
 @Path("/file")
 public class FileService {
 
+	private static final String SERVER_PATH = "C:\\Users\\EMATGRZ\\Desktop\\Folder\\Server";
 	private static final String FILE_PATH = "/home/madmatts/Dropbox/Matts/files.json";
 	private ExecutorService service = Executors.newFixedThreadPool(5);
 	private Queue<FileEvent> queue = Collections.asLifoQueue(new LinkedList<FileEvent>());
@@ -32,6 +35,24 @@ public class FileService {
 	public FileService() {
 		service.submit(tc);
 		service.shutdown();
+	}
+
+	@GET
+	@Path("/get/{username}")
+//	@Path("/get")
+	@Produces("application/json")
+//	@Produces(MediaType.APPLICATION_JSON)
+	public FilesInfo getMovieInJSON(@PathParam("username") String username) {
+		System.out.println(SERVER_PATH + File.separator + "Matts");
+		Crawler crawler = new Crawler(SERVER_PATH + File.separator + "Matts");
+		crawler.scanFiles();
+		
+		FilesInfo fi = new FilesInfo();
+		fi.setUsername("Matts");
+		fi.setFileNo(crawler.getFileList().size());
+		fi.setFileList(crawler.getFileList());
+
+		return fi;
 	}
 
 	@POST
@@ -56,8 +77,7 @@ public class FileService {
 	private void enqueue(FilesInfo fi) {
 		for (File f : fi.getFileList()) {
 			FileEvent fe = new FileEvent();
-			fe.setDestinationDirectory(
-					"/home/madmatts/Dropbox/Server" + File.separator + fi.getUsername() + File.separator);
+			fe.setDestinationDirectory(SERVER_PATH + File.separator + fi.getUsername() + File.separator);
 			fe.setFilename(f.getName());
 			fe.setSourceDirectory(f.getPath());
 			queue.add(fe);

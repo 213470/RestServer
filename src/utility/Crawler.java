@@ -111,30 +111,31 @@ public class Crawler {
 		return json;
 	}
 
-	public boolean checkForDifference() {
+	public boolean checkForDifference(List<File> listToCheck) {
 		ObjectMapper mapper = new ObjectMapper();
 		List<File> retainedFiles = new LinkedList<>();
 		retainedFiles.addAll(fileList);
 		differenceList.clear();
 		differenceList.addAll(fileList);
-		try {
-			FilesInfo savedContent = mapper.readValue(new File(homeDir + JSON_FILENAME), FilesInfo.class);
-			retainedFiles.retainAll(savedContent.getFileList());
+//		try {
+//			FilesInfo savedContent = mapper.readValue(new File(homeDir + JSON_FILENAME), FilesInfo.class);
+//			retainedFiles.retainAll(savedContent.getFileList());
+			retainedFiles.retainAll(listToCheck);
 			differenceList.removeAll(retainedFiles);
 			// if (savedContent.getFileList().retainAll(fileList)) {
 			// updateJSON(savedContent.getUsername());
 			// System.out.println("JSON updated");
 			// }
-		} catch (JsonParseException e) {
-			System.out.println(e.getClass());
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			System.out.println(e.getClass());
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println(e.getClass());
-			e.printStackTrace();
-		}
+//		} catch (JsonParseException e) {
+//			System.out.println(e.getClass());
+//			e.printStackTrace();
+//		} catch (JsonMappingException e) {
+//			System.out.println(e.getClass());
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			System.out.println(e.getClass());
+//			e.printStackTrace();
+//		}
 
 		if (!fileList.isEmpty() && !differenceList.isEmpty()) {
 			return true;
@@ -145,6 +146,11 @@ public class Crawler {
 	public List<File> getDifferenceList() {
 		return differenceList;
 	}
+	
+	public List<File> getFileList() {
+		return fileList;
+	}
+
 
 	public String getHomeDir() {
 		return homeDir;
