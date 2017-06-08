@@ -17,6 +17,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.FileEvent;
@@ -27,28 +28,72 @@ import utility.Crawler;
 public class FileService {
 
 	private static final String SERVER_PATH = "C:\\Users\\EMATGRZ\\Desktop\\Folder\\Server";
-	private static final String FILE_PATH = "/home/madmatts/Dropbox/Matts/files.json";
+	// private static final String FILE_PATH =
+	// "/home/madmatts/Dropbox/Matts/files.json";
 	private ExecutorService service = Executors.newFixedThreadPool(5);
 	private Queue<FileEvent> queue = Collections.asLifoQueue(new LinkedList<FileEvent>());
-	private TrafficController tc = new TrafficController(queue);
+	private FileDownloader fileDownloader = new FileDownloader(queue);
 
 	public FileService() {
-		service.submit(tc);
-		service.shutdown();
+		Thread t1 = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(300);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					service.submit(fileDownloader);
+					
+				}
+			}
+
+		});
+		t1.start();
+	}
+
+	@GET
+	@Path("{username}")
+	@Produces("application/json")
+	public Response getUserById(@PathParam("username") String username) {
+		System.out.println(SERVER_PATH + File.separator + username);
+		Crawler crawler = new Crawler(SERVER_PATH + File.separator + username);
+		crawler.scanFiles();
+
+		FilesInfo fi = new FilesInfo();
+		fi.setUsername(username);
+		fi.setFileNo(crawler.getFileList().size());
+		fi.setFileList(crawler.getFileList());
+
+		ObjectMapper mapper = new ObjectMapper();
+		String fiJSON = "";
+		try {
+			fiJSON = mapper.writeValueAsString(fi);
+			System.out.println(fiJSON);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return Response.status(200).entity(fiJSON).build();
+
 	}
 
 	@GET
 	@Path("/get/{username}")
-//	@Path("/get")
+	// @Path("/get")
 	@Produces("application/json")
-//	@Produces(MediaType.APPLICATION_JSON)
+	// @Produces(MediaType.APPLICATION_JSON)
 	public FilesInfo getMovieInJSON(@PathParam("username") String username) {
-		System.out.println(SERVER_PATH + File.separator + "Matts");
-		Crawler crawler = new Crawler(SERVER_PATH + File.separator + "Matts");
+		System.out.println(SERVER_PATH + File.separator + username);
+		Crawler crawler = new Crawler(SERVER_PATH + File.separator + username);
 		crawler.scanFiles();
-		
+
 		FilesInfo fi = new FilesInfo();
-		fi.setUsername("Matts");
+		fi.setUsername(username);
 		fi.setFileNo(crawler.getFileList().size());
 		fi.setFileList(crawler.getFileList());
 
@@ -66,7 +111,11 @@ public class FileService {
 			FilesInfo filesInfo = mapper.readValue(jsonUpdate, FilesInfo.class);
 			System.out.println(filesInfo);
 			enqueue(filesInfo);
+			Thread.sleep(10000);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
