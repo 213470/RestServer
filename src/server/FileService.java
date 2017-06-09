@@ -27,9 +27,8 @@ import utility.Crawler;
 @Path("/file")
 public class FileService {
 
-	private static final String SERVER_PATH = "C:\\Users\\EMATGRZ\\Desktop\\Folder\\Server";
-	// private static final String FILE_PATH =
-	// "/home/madmatts/Dropbox/Matts/files.json";
+	private static final String SERVER_PATH = "/home/dominika/Dropbox/Server";
+
 	private ExecutorService service = Executors.newFixedThreadPool(5);
 	private Queue<FileEvent> queue = Collections.asLifoQueue(new LinkedList<FileEvent>());
 	private FileDownloader fileDownloader = new FileDownloader(queue);

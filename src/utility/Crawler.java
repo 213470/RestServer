@@ -141,15 +141,13 @@ public class Crawler {
 		// e.printStackTrace();
 		// }
 		differenceList = retainClientToServerFiles(listToCheck);
-		
+
 		System.out.println("File List");
 		System.out.println(listToCheck);
 		System.out.println("Retained List");
 		System.out.println(retainedFiles);
 		System.out.println("Difference List");
 		System.out.println(differenceList);
-		
-		
 
 		if (!fileList.isEmpty() && !differenceList.isEmpty()) {
 			return true;
@@ -169,24 +167,25 @@ public class Crawler {
 		return homeDir;
 	}
 
-	private List<File> retainClientToServerFiles(List<File> toCheck){
+	private List<File> retainClientToServerFiles(List<File> toCheck) {
 		List<File> retained = new LinkedList<>();
 		List<File> diff = fileList;
-		
-		for(File client : fileList){
-			Pattern p = Pattern.compile(".+Server\\\\"+username+"\\\\"+client.getName()+"");
+
+		for (File client : fileList) {
+			Pattern p = Pattern
+					.compile(".+Server" + File.separator + username + File.separator + client.getName() + "");
 			System.out.println(client.getName());
-			for(File server : toCheck){
+			for (File server : toCheck) {
 				Matcher m = p.matcher(server.getAbsolutePath());
-				if(m.matches()){
+				if (m.matches()) {
 					retained.add(client);
-					System.out.println(server.getName() + " - " +client.getName());
+					System.out.println(server.getName() + " - " + client.getName());
 				}
 			}
-			
-		}		
+
+		}
 		diff.removeAll(retained);
-		
+
 		return diff;
 	}
 

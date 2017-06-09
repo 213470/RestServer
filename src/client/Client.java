@@ -24,7 +24,6 @@ public class Client {
 
 	public static void main(String[] args) {
 		USERNAME = JOptionPane.showInputDialog("Enter your username: ");
-//		USERNAME = "Matts";
 		try {
 
 			UserInfo user = new UserInfo(USERNAME, args[0]);
