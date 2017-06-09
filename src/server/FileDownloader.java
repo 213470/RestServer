@@ -32,11 +32,11 @@ public class FileDownloader implements Runnable {
 					e.printStackTrace();
 				}
 				System.out.println("[" + queue.size() + "]{" + Thread.currentThread() + "}Dequeued: " + fe.toString());
-				 System.out.println("Sleep for: 5s.");
-				Thread.sleep(5000);
+//				 System.out.println("Sleep for: 5s.");
+//				Thread.sleep(5000);
 			} else {
-				 System.out.println("Sleep for: 15s.");
-				Thread.sleep(15000);
+//				 System.out.println("Sleep for: 15s.");
+//				Thread.sleep(15000);
 			}
 
 		} catch (InterruptedException e) {

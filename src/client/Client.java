@@ -24,22 +24,22 @@ public class Client {
 
 	public static void main(String[] args) {
 		USERNAME = JOptionPane.showInputDialog("Enter your username: ");
-
+//		USERNAME = "Matts";
 		try {
 
 			UserInfo user = new UserInfo(USERNAME, args[0]);
 
-			Crawler crawler = new Crawler(user.getHomePath() + File.separator + user.getUsername());
+			Crawler crawler = new Crawler(user.getHomePath() + File.separator + user.getUsername(), user.getUsername());
 			crawler.scanFiles();
 			if (crawler.checkForDifference(getServerStructure().getFileList())) {
 
-				crawler.updateJSON(USERNAME);
-				crawler.returnJson(USERNAME);
+				crawler.updateJSON();
+				crawler.returnJson();
 
 				ClientRequest request = new ClientRequest("http://localhost:8080/RestServer/file/post");
 				request.accept("application/json");
-				request.body("application/json", crawler.returnJson(USERNAME));
-				System.out.println(crawler.returnJson(USERNAME));
+				request.body("application/json", crawler.returnJson());
+				System.out.println(crawler.returnJson());
 
 				ClientResponse<String> response = request.post(String.class);
 
@@ -78,13 +78,9 @@ public class Client {
 	}
 
 	private static FilesInfo getServerStructure() {
-		// ClientRequest request = new
-		// ClientRequest("http://localhost:8080/RestServer/file/get/" +
-		// USERNAME);
-		ClientRequest request = new ClientRequest("http://localhost:8080/RestServer/file/1");
-		// request.accept("application/json");
-		// request.body("application/json");
-		// System.out.println();
+
+		ClientRequest request = new ClientRequest("http://localhost:8080/RestServer/file/" + USERNAME);
+
 		request.accept(MediaType.APPLICATION_JSON);
 
 		ClientResponse<String> response;
@@ -107,15 +103,6 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// try {
-		// response = request.get(FilesInfo.class);
-		// FilesInfo fi = response.getEntity();
-		// return fi;
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 
 		return null;
 	}

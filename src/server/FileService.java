@@ -60,7 +60,10 @@ public class FileService {
 	@Produces("application/json")
 	public Response getUserById(@PathParam("username") String username) {
 		System.out.println(SERVER_PATH + File.separator + username);
-		Crawler crawler = new Crawler(SERVER_PATH + File.separator + username);
+		if(!(new File(SERVER_PATH + File.separator + username).exists())){
+			new File(SERVER_PATH + File.separator + username).mkdir();
+		}
+		Crawler crawler = new Crawler(SERVER_PATH + File.separator + username, username);
 		crawler.scanFiles();
 
 		FilesInfo fi = new FilesInfo();
@@ -81,24 +84,24 @@ public class FileService {
 		return Response.status(200).entity(fiJSON).build();
 
 	}
-
-	@GET
-	@Path("/get/{username}")
-	// @Path("/get")
-	@Produces("application/json")
-	// @Produces(MediaType.APPLICATION_JSON)
-	public FilesInfo getMovieInJSON(@PathParam("username") String username) {
-		System.out.println(SERVER_PATH + File.separator + username);
-		Crawler crawler = new Crawler(SERVER_PATH + File.separator + username);
-		crawler.scanFiles();
-
-		FilesInfo fi = new FilesInfo();
-		fi.setUsername(username);
-		fi.setFileNo(crawler.getFileList().size());
-		fi.setFileList(crawler.getFileList());
-
-		return fi;
-	}
+//
+//	@GET
+//	@Path("/get/{username}")
+//	// @Path("/get")
+//	@Produces("application/json")
+//	// @Produces(MediaType.APPLICATION_JSON)
+//	public FilesInfo getMovieInJSON(@PathParam("username") String username) {
+//		System.out.println(SERVER_PATH + File.separator + username);
+//		Crawler crawler = new Crawler(SERVER_PATH + File.separator + username, username);
+//		crawler.scanFiles();
+//
+//		FilesInfo fi = new FilesInfo();
+//		fi.setUsername(username);
+//		fi.setFileNo(crawler.getFileList().size());
+//		fi.setFileList(crawler.getFileList());
+//
+//		return fi;
+//	}
 
 	@POST
 	@Path("/post")
